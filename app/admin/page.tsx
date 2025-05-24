@@ -68,19 +68,13 @@ const AdminPage = () => {
                     <h2>管理医生信息</h2>
                     <ul>
                         <li>
-                            <Link href="/admin/doctors/view" className="btn">查看医生信息</Link>
+                            <Link href="/admin/doctors/delete" className="btn">管理医生信息</Link>
                         </li>
                         <li>
                             <Link href="/admin/doctors/add" className="btn">添加医生信息</Link>
                         </li>
                         <li>
-                            <Link href="/admin/doctors/delete" className="btn">删除医生信息</Link>
-                        </li>
-                        <li>
-                            <Link href="/admin/departments/add" className="btn">添加科室信息</Link>
-                        </li>
-                        <li>
-                            <Link href="/admin/departments/delete" className="btn">删除科室信息</Link>
+                            <Link href="/admin/departments" className="btn">管理科室信息</Link>
                         </li>
                     </ul>
                 </div>
