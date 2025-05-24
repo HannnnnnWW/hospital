@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import '../style.css';
+import '../style.css'; 
 
 type Article = {
     id: number;
