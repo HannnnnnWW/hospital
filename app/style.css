@@ -184,6 +184,13 @@ h2 {
     background: #0072c6;
 }
 
+h3 {
+    color: #0072c6;
+    padding-bottom: 12px;
+    font-size: 1.2rem;
+    position: relative;
+}
+
 /* 列表样式 */
 ul {
     list-style: none;
@@ -361,7 +368,7 @@ li:hover {
 .department-container {
     background-color: white;
     min-height: 100vh;
-}
+} 
 
 /* 头部按钮容器 */
 .header-buttons {
