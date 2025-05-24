@@ -17,6 +17,7 @@ type Article = {
 
 const HomePage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAdmin, setAdmin] = useState(false);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [articles, setArticles] = useState<Article[]>([]);
     const router = useRouter();
@@ -149,11 +150,15 @@ const fetchArticles = async () => {
         <div>
             <header>
                 <h1>奔向端午医院预约挂号系统</h1>
-                {isLoggedIn ? (
-                    <Link href="/profile" className="login-btn">个人中心</Link>
-                ) : (
-                    <Link href="/login" className="login-btn">用户登录</Link>
-                )}
+         {isLoggedIn ? (
+             isAdmin ? (
+                  <Link href="/admin" className="login-btn">个人中心</Link>
+                 ) : (
+                  <Link href="/profile" className="login-btn">个人中心</Link>
+                 )
+            ) : (
+                  <Link href="/login" className="login-btn">用户登录</Link>
+            )}
             </header>
             <div className="hospital-image">
             <img src="/hospital-image.png" alt="医院实景图" />

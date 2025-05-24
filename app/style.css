@@ -510,3 +510,9 @@ li:hover {
     max-width: 800px;
     margin: 20px auto;
 }
+
+/*管理员页面样式*/
+.admin-container {
+    background-color: white;
+    min-height: 100vh;
+}

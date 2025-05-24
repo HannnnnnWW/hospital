@@ -125,8 +125,16 @@ useEffect(() => {
             alert('登录时用户名和密码不能为空，请重新输入！');
             return;
         }
-        localStorage.setItem('isLoggedIn', 'true');
-        router.push('/');
+         if (loginUsername === '00000000') {
+            // 管理员账号登录，跳转到管理员页面
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('isAdmin', 'true');
+            router.push('/admin');
+        } else {
+            // 普通用户登录，跳转到首页
+            localStorage.setItem('isLoggedIn', 'true');
+            router.push('/');
+        }
     };
 
     return (
