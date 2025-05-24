@@ -17,7 +17,7 @@ type Article = {
 
 const HomePage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [articles, setArticles] = useState<Article[]>([]);
     const router = useRouter();
@@ -29,6 +29,10 @@ const HomePage = () => {
             setIsLoggedIn(loginStatus === 'true');
         };
         
+         // 获取管理员状态
+            const adminStatus = localStorage.getItem('isAdmin');
+            setIsAdmin(adminStatus === 'true');
+
         checkLoginStatus();
     /*// 新增auth.ts工具模块
 export const checkAuth = async () => {

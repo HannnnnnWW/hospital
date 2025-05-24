@@ -66,12 +66,26 @@ const AdminPage = () => {
         }
     };
 
+    const handleLogout = () => {
+        // 清除认证状态
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('isAdmin');
+        // 返回首页
+        router.push('/');
+    };
+
     return (
         <div className="admin-container">
             <header>
                 <h1>管理员页面</h1>
                 <div className="header-buttons">
                     <Link href="/" className="return-btn">返回首页</Link>
+                    <button 
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={handleLogout}
+                    >
+                        退出登录
+                    </button>
                 </div>
             </header>
             <div className="doctor-section">
