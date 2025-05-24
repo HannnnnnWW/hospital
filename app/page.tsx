@@ -156,7 +156,7 @@ const fetchArticles = async () => {
                 <h1>奔向端午医院预约挂号系统</h1>
          {isLoggedIn ? (
              isAdmin ? (
-                  <Link href="/admin" className="login-btn">个人中心</Link>
+                  <Link href="/admin" className="login-btn">管理页</Link>
                  ) : (
                   <Link href="/profile" className="login-btn">个人中心</Link>
                  )
