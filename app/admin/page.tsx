@@ -12,7 +12,7 @@ type Doctor = {
     specialty: string;
 };
 
-// 定义文章类型
+// 定义文章（公告）类型
 type Article = {
     id: number;
     title: string;
@@ -22,8 +22,6 @@ type Article = {
 const AdminPage = () => {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [articles, setArticles] = useState<Article[]>([]);
-    const [newArticleTitle, setNewArticleTitle] = useState('');
-    const [newArticleContent, setNewArticleContent] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -42,29 +40,6 @@ const AdminPage = () => {
         ];
         setArticles(mockArticles);
     }, []);
-
-    const handleUpdateDoctor = (doctor: Doctor) => {
-        // 这里可以实现更新医生信息的逻辑
-        console.log('Updating doctor:', doctor);
-    };
-
-    const handleUpdateArticle = (article: Article) => {
-        // 这里可以实现更新公告内容的逻辑
-        console.log('Updating article:', article);
-    };
-
-    const handleAddArticle = () => {
-        if (newArticleTitle && newArticleContent) {
-            const newArticle: Article = {
-                id: articles.length + 1,
-                title: newArticleTitle,
-                content: newArticleContent
-            };
-            setArticles([...articles, newArticle]);
-            setNewArticleTitle('');
-            setNewArticleContent('');
-        }
-    };
 
     const handleLogout = () => {
         // 清除认证状态
@@ -88,50 +63,37 @@ const AdminPage = () => {
                     </button>
                 </div>
             </header>
-            <div className="doctor-section">
-                <h2>医生信息管理</h2>
-                {doctors.map((doctor) => (
-                    <div key={doctor.id} className="doctor-card">
-                        <h3>{doctor.name}</h3>
-                        <p className="doctor-info">职称: {doctor.title}</p>
-                        <p className="doctor-info">专长: {doctor.specialty}</p>
-                        <button 
-                            className="update-btn"
-                            onClick={() => handleUpdateDoctor(doctor)}
-                        >
-                            修改信息
-                        </button>
-                    </div>
-                ))}
-            </div>
-            <div className="article-section">
-                <h2>公告内容管理</h2>
-                {articles.map((article) => (
-                    <div key={article.id} className="article-card">
-                        <h3>{article.title}</h3>
-                        <p>{article.content}</p>
-                        <button 
-                            className="update-btn"
-                            onClick={() => handleUpdateArticle(article)}
-                        >
-                            修改内容
-                        </button>
-                    </div>
-                ))}
-                <div className="add-article">
-                    <h3>添加新公告</h3>
-                    <input
-                        type="text"
-                        placeholder="公告标题"
-                        value={newArticleTitle}
-                        onChange={(e) => setNewArticleTitle(e.target.value)}
-                    />
-                    <textarea
-                        placeholder="公告内容"
-                        value={newArticleContent}
-                        onChange={(e) => setNewArticleContent(e.target.value)}
-                    />
-                    <button onClick={handleAddArticle}>添加</button>
+            <div className="main-content">
+                <div className="registration-section">
+                    <h2>管理医生信息</h2>
+                    <ul>
+                        <li>
+                            <Link href="/admin/doctors/view" className="btn">查看医生信息</Link>
+                        </li>
+                        <li>
+                            <Link href="/admin/doctors/add" className="btn">添加医生信息</Link>
+                        </li>
+                        <li>
+                            <Link href="/admin/doctors/delete" className="btn">删除医生信息</Link>
+                        </li>
+                        <li>
+                            <Link href="/admin/departments/add" className="btn">添加科室信息</Link>
+                        </li>
+                        <li>
+                            <Link href="/admin/departments/delete" className="btn">删除科室信息</Link>
+                        </li>
+                    </ul>
+                </div>
+                <div className="notice-section">
+                    <h2>管理公告</h2>
+                    <ul>
+                        <li>
+                            <Link href="/admin/articles/add" className="btn">添加公告</Link>
+                        </li>
+                        <li>
+                            <Link href="/admin/articles/delete" className="btn">删除公告</Link>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
