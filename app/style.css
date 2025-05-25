@@ -523,3 +523,21 @@ li:hover {
     background-color: white;
     min-height: 100vh;
 }
+
+
+/*输入框*/
+.input-field {
+    color: #000; /* 黑色，可按需调整 */
+}
+.input-field::-webkit-input-placeholder {
+    color: #999; 
+}
+.input-field:-moz-placeholder {
+    color: #999; 
+}
+.input-field::-moz-placeholder {
+    color: #999; 
+}
+.input-field:-ms-input-placeholder {
+    color: #999; 
+}

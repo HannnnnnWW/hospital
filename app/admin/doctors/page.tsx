@@ -1,4 +1,4 @@
-// hospital/app/doctor/delete/page.tsx
+// hospital/app/doctor/page.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ type Doctor = {
 
 const DoctorDeletePage = () => {
     const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
+     const [newDoctor, setNewDoctor] = useState('');
        const [loading, setLoading] = useState(true);
        const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +45,10 @@ const DoctorDeletePage = () => {
         // .catch(error => {
         //     console.error('网络错误:', error);
         // });
+    };
+
+        const handleAddDepartment = () => {
+        //添加逻辑接口
     };
 
 
@@ -100,6 +105,37 @@ if (loading) {
                     </div>
                 ))}
             </div>
+            <div className="doctor-list">
+                <div className="doctor-card">
+                <h3>添加新医生</h3>
+                <div>
+                <input
+                    type="text"
+                    placeholder="请输入医生姓名"
+                    className="input-field"
+                />
+                </div>
+                <div>
+                <input
+                    type="text"
+                    placeholder="请输入医生职称"
+                    className="input-field"
+                />
+                </div>
+                <div>
+                <input
+                    type="text"
+                    placeholder="请输入医生专长"
+                    className="input-field"
+                />
+                </div>
+                <button onClick={handleAddDepartment} className="add-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    添加
+                </button>
+                </div>
+            </div>
+
+
         </div>
     );
 

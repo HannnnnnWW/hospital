@@ -33,7 +33,7 @@ const DepartmentsPage = () => {
         if (newDepartmentName.trim() === '') {
             return;
         }
-        // 这里将来会替换为实际的添加科室的 API 调用
+        // 这里将来替换为实际的添加科室的 API 调用
         const newDepartment: Department = {
             id: departments.length + 1,
             name: newDepartmentName
