@@ -65,7 +65,7 @@ const AdminPage = () => {
             </header>
             <div className="main-content">
                 <div className="registration-section">
-                    <h2>管理医生信息</h2>
+                    <h2>管理挂号信息</h2>
                     <ul>
                         <li>
                             <Link href="/admin/doctors" className="btn">管理医生信息</Link>
