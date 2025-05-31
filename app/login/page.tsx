@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 // 更新 API 基础 URL
-const API_BASE = 'http://localhost:3001';
+const API_BASE = 'http://121.40.80.144:3001/api';
 
 const LoginPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');

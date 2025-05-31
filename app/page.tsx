@@ -6,7 +6,7 @@ import './style.css';
 import { useRouter } from 'next/navigation';
 
 // 更新 API 基础 URL
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'http://121.40.80.144:3001/api';
 
 type Department = {
     id: number;

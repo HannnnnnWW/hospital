@@ -18,7 +18,7 @@ const AdminPage = () => {
         // 获取科室列表
         const fetchDepartments = async () => {
             try {
-                const res = await fetch('http://localhost:3001/api/departments'); // 替换为你的 API 地址
+                const res = await fetch('http://121.40.80.144:3001/api/departments'); // 替换为你的 API 地址
                 if (!res.ok) {
                     throw new Error(`Failed to fetch departments: ${res.status} ${res.statusText}`);
                 }
@@ -36,7 +36,7 @@ const AdminPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:3001/api/doctors', { // 修改为后端的 API 地址
+            const res = await fetch('http://121.40.80.144:3001/api/doctors', { // 修改为后端的 API 地址
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const AdminPage = () => {
 
     const handleAddDepartment = async () => {
         try {
-            const res = await fetch('http://localhost:3001/api/departments', { // 替换为你的 API 地址
+            const res = await fetch('http://121.40.80.144:3001/api/departments', { // 替换为你的 API 地址
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const AdminPage = () => {
             // 重新获取科室列表
             const fetchDepartments = async () => {
                 try {
-                    const res = await fetch('http://localhost:3001/api/departments'); // 替换为你的 API 地址
+                    const res = await fetch('http://121.40.80.144:3001/api/departments'); // 替换为你的 API 地址
                     if (!res.ok) {
                         throw new Error(`Failed to fetch departments: ${res.status} ${res.statusText}`);
                     }

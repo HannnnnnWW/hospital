@@ -42,7 +42,7 @@ const DoctorDeletePage = () => {
     ];
 
     // 从环境变量中获取 API URL
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://121.40.80.144:3001/api';
 
     // 获取当前科室参数
     const department = params.get('department') || '';

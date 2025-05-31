@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import '../style.css';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = 'http://121.40.80.144:3001/api';
 
 type Article = {
     id: number;

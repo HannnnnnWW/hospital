@@ -16,7 +16,7 @@ const DepartmentsPage = () => {
     const [formError, setFormError] = useState<string | null>(null);
 
     // 从环境变量获取API URL
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://121.40.80.144:3001/api';
 
     // 加载科室数据
     useEffect(() => {

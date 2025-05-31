@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-const API_BASE = 'http://localhost:3001/api'; // 使用实际的 API 基础 URL
+const API_BASE = 'http://121.40.80.144:3001/api'; // 使用实际的 API 基础 URL
 
 interface Registration {
     id: string; // 假设后端返回的挂号记录有 id
