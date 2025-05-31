@@ -2,12 +2,18 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import '../style.css'; 
+import '../style.css';
+
+const API_BASE = 'http://localhost:3001';
 
 type Article = {
     id: number;
     title: string;
     content: string;
+    publish_date: string;
+    author?: string;
+    pageviews: number;
+    attachments?: string[];
 };
 /*
 //接入后端后拓展的文章类型
@@ -32,65 +38,38 @@ const ArticlePage = () => {
 
     useEffect(() => {
         const fetchArticle = async () => {
-            if (!articleId) {
-                setError('文章ID无效');
+             console.log('fetchArticles 函数被调用');
+            if (!articleId || isNaN(articleId)) {
+                setError('文章ID不合法');
                 setLoading(false);
                 return;
             }
 
             try {
-                // 这里将来会替换为实际的API调用
-                // const response = await fetch(`/api/articles/${articleId}`);
-                // const data = await response.json();
-                // setArticle(data);
-                /*
-                useEffect(() => {
-  const fetchArticle = async () => {
-    if (!articleId || isNaN(articleId)) { // 增强ID校验
-      setError('文章ID不合法');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/articles/${articleId}`);
-      
-      if (!res.ok) {
-        if (res.status === 404) throw new Error('文章不存在');
-        throw new Error(`HTTP错误! 状态码: ${res.status}`);
-      }
-      
-      const data: Article = await res.json();
-      
-      // 数据格式校验
-      if (!data.id || !data.title || !data.content) {
-        throw new Error('返回数据格式错误');
-      }
-
-      setArticle(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '获取文章失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchArticle();
-}, [articleId]);*/
+                setLoading(true);
+                const res = await fetch(`${API_BASE}/api/articles/${articleId}`);
+               
+                if (!res.ok) {
+                    if (res.status === 404) throw new Error('文章不存在');
+                    throw new Error(`HTTP错误! 状态码: ${res.status}`);
+                }
                 
-                // 临时使用模拟数据
-                const mockArticle = {
-                    id: articleId,
-                    title: '【最新】五一假期门诊安排通知',
-                    content: '五一期间门诊正常开放，急诊科24小时接诊。具体排班：4月29日-5月3日，内科、外科普通门诊照常...'
-                };
-                setArticle(mockArticle);
-                setLoading(false);
+                const data: Article = await res.json();
+                  console.log('从后端 API 获取到的文章数据:', data);
+                // 数据格式校验
+                if (!data.id || !data.title || !data.content) {
+                    throw new Error('返回数据格式错误');
+                }
+
+                setArticle(data.articles);
+                  console.log('articles 状态被更新:', data);
             } catch (err) {
-                setError('获取文章详情失败');
+                setError(err instanceof Error ? err.message : '获取文章失败');
+                console.error('获取公告数据失败:', error);
+            } finally {
                 setLoading(false);
             }
+            console.log('fetchArticles 函数调用完成');
         };
 
         fetchArticle();
@@ -108,10 +87,30 @@ const ArticlePage = () => {
             </header>
             <div className="article-content">
                 <h2>{article.title}</h2>
+                <div className="article-meta">
+                    {article.author && <span>作者: {article.author}</span>}
+                    <span>发布时间: {new Date(article.publish_date).toLocaleDateString()}</span>
+                    <span>浏览次数: {article.pageviews}</span>
+                </div>
                 <div className="article-body">{article.content}</div>
+                {article.attachments && article.attachments.length > 0 && (
+                    <div className="article-attachments">
+                        <h3>附件</h3>
+                        <ul>
+                            {article.attachments.map((attachment, index) => (
+                                <li key={index}>
+                                    <a href={attachment} target="_blank" rel="noopener noreferrer">
+                                        附件 {index + 1}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
+
 //增加一个边界错误处理模块
 export default ArticlePage;

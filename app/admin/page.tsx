@@ -43,6 +43,8 @@ const AdminPage = () => {
 
     const handleLogout = () => {
         // 清除认证状态
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('isAdmin');
         // 返回首页

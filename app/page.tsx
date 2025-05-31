@@ -1,8 +1,12 @@
 'use client';
+
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import { useRouter } from 'next/navigation';
+
+// 更新 API 基础 URL
+const API_BASE = 'http://localhost:3001/api';
 
 type Department = {
     id: number;
@@ -19,51 +23,95 @@ const HomePage = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [departments, setDepartments] = useState<Department[]>([]);
-    const [articles, setArticles] = useState<Article[]>([]);
+    const [articles, setArticles] = useState<Article[]>([]); // 确保 articles 状态被初始化为空数组
+    const [loading, setLoading] = useState(true); // 添加 loading 状态
+    const [error, setError] = useState<string | null>(null); // 添加 error 状态
     const router = useRouter();
 
     useEffect(() => {
         // 检查登录状态
         const checkLoginStatus = () => {
-            const loginStatus = localStorage.getItem('isLoggedIn');
-            setIsLoggedIn(loginStatus === 'true');
-        };
-        
-         // 获取管理员状态
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
             const adminStatus = localStorage.getItem('isAdmin');
+            setIsLoggedIn(!!(token && userInfo));
             setIsAdmin(adminStatus === 'true');
+        };
 
         checkLoginStatus();
-    /*// 新增auth.ts工具模块
-export const checkAuth = async () => {
-  try {
-    const res = await fetch(`${API_BASE}/auth/check`, {
-      credentials: 'include'
-    });
-    return res.ok;
-  } catch (err) {
-    return false;
-  }
-};
 
-// 修改登录状态检查
-useEffect(() => {
-  const verifyAuth = async () => {
-    const authenticated = await checkAuth();
-    setIsLoggedIn(authenticated);
-  };
-  verifyAuth();
-}, []);*/    
+        // 获取公告数据
+        const fetchArticles = async () => {
+            console.log('fetchArticles 函数被调用');
+            try {
+                const token = localStorage.getItem('token'); // 获取 token
 
-        // 获取科室数据（预留API接口），目前为了模拟是静态不可改变的
+                const res = await fetch(`${API_BASE}/articles`, { // 确保 API 路径正确
+                    headers: {
+                        'Authorization': `Bearer ${token}` // 添加认证头
+                    },
+                    signal: AbortSignal.timeout(10000) // 10秒超时
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`获取公告数据失败: ${res.status} ${res.statusText}\n${errorText}`);
+                }
+
+                const data = await res.json();
+                console.log('从后端 API 获取到的文章数据:', data);
+                setArticles(data.articles); // 只设置 articles 属性
+                console.log('articles 状态被更新:', data.articles);
+            } catch (error: any) {
+                console.error('获取公告数据失败:', error);
+                if (error.name === 'AbortError') {
+                    setError('请求公告数据超时，请检查网络连接');
+                } else if (error.message.includes('Failed to fetch')) {
+                    setError('无法连接到服务器，请检查：\n1. 服务器是否正在运行\n2. 网络连接是否正常\n3. 服务器地址是否正确');
+                } else {
+                    setError(error.message);
+                }
+                // 使用模拟数据作为后备
+                const mockArticles = [
+                    { id: 1, title: '【最新】五一假期门诊安排通知', content: '五一期间门诊正常开放...' },
+                    { id: 2, title: '新引进 CT 设备正式投入使用', content: '我院最新引进的256层螺旋CT...' }
+                ];
+                console.log('使用模拟数据作为后备:', mockArticles);
+                setArticles(mockArticles);
+                console.log('articles 状态被更新:', mockArticles);
+            }
+            console.log('fetchArticles 函数调用完成');
+        };
+
+        // 获取科室数据
         const fetchDepartments = async () => {
             try {
-                // 这里将来会替换为实际的API调用
-                // const response = await fetch('/api/departments');
-                // const data = await response.json();
-                // setDepartments(data);
-                
-                // 临时使用模拟数据
+                const token = localStorage.getItem('token'); // 获取 token
+
+                const res = await fetch(`${API_BASE}/departments`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // 添加认证头
+                    },
+                    signal: AbortSignal.timeout(10000) // 10秒超时
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`获取科室数据失败: ${res.status} ${res.statusText}\n${errorText}`);
+                }
+
+                const data = await res.json();
+                setDepartments(data);
+            } catch (error: any) {
+                console.error('获取科室数据失败:', error);
+                if (error.name === 'AbortError') {
+                    setError('请求科室数据超时，请检查网络连接');
+                } else if (error.message.includes('Failed to fetch')) {
+                    setError('无法连接到服务器，请检查：\n1. 服务器是否正在运行\n2. 网络连接是否正常\n3. 服务器地址是否正确');
+                } else {
+                    setError(error.message);
+                }
+                // 使用模拟数据作为后备
                 const mockDepartments = [
                     { id: 1, name: '内科门诊' },
                     { id: 2, name: '外科门诊' },
@@ -72,100 +120,63 @@ useEffect(() => {
                     { id: 5, name: '急诊科' }
                 ];
                 setDepartments(mockDepartments);
-            } catch (error) {
-                console.error('获取科室数据失败:', error);
             }
         };
-/*// 修改后的fetchDepartments（科室数据接口）
-const fetchDepartments = async () => {
-  try {
-    const res = await fetch(`${API_BASE}/departments`);
-    if (!res.ok) throw new Error(res.statusText);
-    
-    const data: Department[] = await res.json();
-    // 类型校验
-    if (!Array.isArray(data) || !data.every(dept => dept.id && dept.name)) {
-      throw new Error('接口返回数据格式错误');
-    }
-    setDepartments(data);
-  } catch (err) {
-    // 统一错误处理
-    handleError(err);
-  }
-};*/
-/*// 增强Article类型
-type Article = {
-  id: number;
-  title: string;
-  summary: string; // 新增摘要字段
-  publish_date: string;
-  view_count: number;
-  is_top: boolean; // 置顶标识
-};
 
-// 请求逻辑优化
-const fetchArticles = async () => {
-  try {
-    const [articlesRes, bannersRes] = await Promise.all([
-      fetch(`${API_BASE}/articles?limit=5`),
-      fetch(`${API_BASE}/banners`)
-    ]);
-    
-    const articlesData = await validateResponse<Article[]>(articlesRes);
-    const bannersData = await validateResponse<Banner[]>(bannersRes);
-    
-    setArticles([...bannersData, ...articlesData]);
-  } catch (err) {
-    handleError(err);
-  }
-};*/
-        // 获取公告数据（预留API接口）
-        const fetchArticles = async () => {
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
             try {
-                // 这里将来会替换为实际的API调用
-                // const response = await fetch('/api/articles');
-                // const data = await response.json();
-                // setArticles(data);
-                
-                // 临时使用模拟数据
-                const mockArticles = [
-                    { id: 1, title: '【最新】五一假期门诊安排通知', content: '五一期间门诊正常开放...' },
-                    { id: 2, title: '新引进 CT 设备正式投入使用', content: '我院最新引进的256层螺旋CT...' }
-                ];
-                setArticles(mockArticles);
-            } catch (error) {
-                console.error('获取公告数据失败:', error);
+                await Promise.all([
+                    fetchDepartments(),
+                    fetchArticles()
+                ]);
+            } catch (error: any) {
+                console.error('获取数据失败:', error);
+                setError('获取数据失败，请检查网络连接或服务器状态');
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchDepartments();
-        fetchArticles();
+        fetchData();
     }, []);
 
     const navigateToDepartment = (deptName: string) => {
         if (!isLoggedIn) {
             alert('请先登录后再进行挂号');
+            router.push('/login');
             return;
         }
         router.push(`/department?department=${encodeURIComponent(deptName)}`);
     };
 
+    if (loading) {
+        return <div className="loading">加载中...</div>; // 添加 loading 提示
+    }
+
+    if (error) {
+        return <div className="error-message">错误：{error}</div>; // 添加错误提示
+    }
+
     return (
         <div>
-            <header>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px' }}>
                 <h1>奔向端午医院预约挂号系统</h1>
-         {isLoggedIn ? (
-             isAdmin ? (
-                  <Link href="/admin" className="login-btn">管理页</Link>
-                 ) : (
-                  <Link href="/profile" className="login-btn">个人中心</Link>
-                 )
-            ) : (
-                  <Link href="/login" className="login-btn">用户登录</Link>
-            )}
+                <div className="header-buttons" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    {isLoggedIn ? (
+                        isAdmin ? (
+                            <Link href="/admin" className="admin-btn">管理后台</Link>
+                        ) : (
+                            <Link href="/profile" className="login-btn">个人中心</Link>
+                        )
+                    ) : (
+                        <Link href="/login" className="login-btn">用户登录</Link>
+                    )}
+                </div>
             </header>
             <div className="hospital-image">
-            <img src="/hospital-image.png" alt="医院实景图" />
+                <img src="/hospital-image.png" alt="医院实景图" />
             </div>
             <div className="guide-section">
                 <Link href="/guide" className="guide-dialog">智能导诊入口 ▶</Link>

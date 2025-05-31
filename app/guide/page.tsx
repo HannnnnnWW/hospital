@@ -80,23 +80,22 @@ const GuidePage = () => {
     };
     useEffect(() => {
         const checkLoginStatus = () => {
-            // 示例：从localStorage检查token
-            const token = localStorage.getItem('authToken');
-            setIsLoggedIn(!!token);
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
+            setIsLoggedIn(!!(token && userInfo));
         };
         checkLoginStatus();
     }, []);
     // 处理挂号跳转
-    const handleAppointmentRedirect = () => {
-        if (isLoggedIn === null) return; // 等待登录状态检查
 
-        if (isLoggedIn) {
-            // 已登录，跳转到挂号页
-            router.push(`/appointment?dept=${encodeURIComponent(recommendDept || '')}`);
-        } else {
-            // 未登录，跳转到登录页，并携带返回URL
-            router.push(`/login?redirect=${encodeURIComponent(`/appointment?dept=${encodeURIComponent(recommendDept || '')}`)}`);
+    const handleAppointmentRedirect = () => {
+        // 确保使用===严格比较
+        if (isLoggedIn === true) {  // 明确判断true
+            router.push(`/`);
+        } else if (isLoggedIn === false) {
+            alert('请先登录后再挂号！');
         }
+        // isLoggedIn为null时不处理
     };
     // 重新开始
     const restartGuide = () => {

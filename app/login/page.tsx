@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+// 更新 API 基础 URL
+const API_BASE = 'http://localhost:3001';
+
 const LoginPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
     const [registerUsername, setRegisterUsername] = useState('');
@@ -11,129 +14,135 @@ const LoginPage: React.FC = () => {
     const [loginUsername, setLoginUsername] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [showRegisterSuccess, setShowRegisterSuccess] = useState(false);
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const router = useRouter();
 
     const handleTabChange = (tab: 'login' | 'register') => {
         setActiveTab(tab);
+        setError('');
     };
 
-    const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleRegisterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (registerUsername === '' || registerPassword === '') {
-            alert('注册时用户名和密码不能为空，请重新输入！');
+        setError('');
+        setIsLoading(true);
+
+        // 前端验证
+        if (!registerUsername || !registerPassword) {
+            setError('用户名和密码不能为空');
+            setIsLoading(false);
             return;
         }
-        //前端模拟登录，后续会替换为后端API
-        setShowRegisterSuccess(true);//全部认为登录成功
-        setTimeout(() => {
-            setShowRegisterSuccess(false);
-            setActiveTab('login');
-        }, 1500);//延迟模拟网络请求
-        //实际注册逻辑
-        /*const handleRegisterSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  // 增强前端验证
-  if (!/^[a-zA-Z0-9_]{4,16}$/.test(registerUsername)) {
-    alert('用户名需4-16位字母/数字/下划线');
-    return;
-  }
-  if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/.test(registerPassword)) {
-    alert('密码需至少8位且包含字母和数字');
-    return;
-  }
 
-  try {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: registerUsername,
-        password: registerPassword
-      })
-    });
+        if (registerUsername.length < 4 || registerUsername.length > 16) {
+            setError('用户名长度需在4-16位之间');
+            setIsLoading(false);
+            return;
+        }
 
-    const data = await res.json();
-    
-    if (res.status === 201) {
-      setShowRegisterSuccess(true);
-      setTimeout(() => {
-        setActiveTab('login');
-        setRegisterUsername('');
-        setRegisterPassword('');
-      }, 1500);
-    } else {
-      alert(`注册失败: ${data.message}`);
-    }
-  } catch (err) {
-    alert('网络连接异常，请检查后重试');
-  }
-};*/
-//实际登录逻辑
-/*const handleLoginSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: loginUsername,
-        password: loginPassword
-      }),
-      credentials: 'include' // 允许携带Cookie
-    });
+        if (registerPassword.length < 8) {
+            setError('密码长度至少为8位');
+            setIsLoading(false);
+            return;
+        }
 
-    if (res.ok) {
-      const data = await res.json();
-      // 存储用户信息（示例）
-      localStorage.setItem('userInfo', JSON.stringify(data.user));
-      router.push('/');
-    } else {
-      const errorData = await res.json();
-      alert(`登录失败: ${errorData.message}`);
-    }
-  } catch (err) {
-    alert('网络请求失败，请检查连接');
-  }
-};*/
-/*
-//全局认证状态功能
-export const checkAuth = async () => {
-  try {
-    const res = await fetch('/api/auth/check', {
-      credentials: 'include'
-    });
-    return res.ok;
-  } catch (err) {
-    return false;
-  }
-};
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/register`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: registerUsername,
+                    password: registerPassword
+                }),
+                signal: AbortSignal.timeout(10000) // 10秒超时
+            });
 
-// 在页面跳转时验证
-useEffect(() => {
-  checkAuth().then(authenticated => {
-    if (authenticated) router.push('/');
-  });
-}, []);*/
+            const data = await res.json();
+
+            if (res.status === 201) {
+                setShowRegisterSuccess(true);
+                setTimeout(() => {
+                    setActiveTab('login');
+                    setRegisterUsername('');
+                    setRegisterPassword('');
+                }, 1500);
+            } else {
+                setError(data.message || '注册失败');
+            }
+        } catch (err: any) {
+            console.error('注册失败:', err);
+            if (err.name === 'AbortError') {
+                setError('注册请求超时，请检查网络连接');
+            } else if (err.message.includes('Failed to fetch')) {
+                setError('无法连接到服务器，请检查：\n1. 服务器是否正在运行\n2. 网络连接是否正常\n3. 服务器地址是否正确');
+            } else {
+                setError(err.message || '注册失败');
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleLoginSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (loginUsername === '' || loginPassword === '') {
-            alert('登录时用户名和密码不能为空，请重新输入！');
+        setError('');
+        setIsLoading(true);
+
+        if (!loginUsername || !loginPassword) {
+            setError('用户名和密码不能为空');
+            setIsLoading(false);
             return;
         }
-         if (loginUsername === '00000000') {
-            // 管理员账号登录，跳转到管理员页面
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('isAdmin', 'true');
-            router.push('/admin');
-        } else {
-            // 普通用户登录，跳转到首页
-            localStorage.setItem('isLoggedIn', 'true');
-            router.push('/');
+
+        try {
+            // 检查是否是管理员登录
+            const isAdminLogin = loginUsername === '00000000' && loginPassword === '00000000';
+            
+            const res = await fetch(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: loginUsername,
+                    password: loginPassword
+                }),
+                signal: AbortSignal.timeout(10000) // 10秒超时
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.user && data.token) {
+                // 存储用户信息和token
+                localStorage.setItem('userInfo', JSON.stringify(data.user));
+                localStorage.setItem('token', data.token);
+                
+                if (isAdminLogin) {
+                    localStorage.setItem('isAdmin', 'true');
+                    router.push('/admin');
+                } else {
+                    router.push('/');
+                }
+            } else {
+                setError(data.message || '登录失败');
+            }
+        } catch (err: any) {
+            console.error('登录失败:', err);
+            if (err.name === 'AbortError') {
+                setError('登录请求超时，请检查网络连接');
+            } else if (err.message.includes('Failed to fetch')) {
+                setError('无法连接到服务器，请检查：\n1. 服务器是否正在运行\n2. 网络连接是否正常\n3. 服务器地址是否正确');
+            } else {
+                setError(err.message || '登录失败');
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -155,6 +164,12 @@ useEffect(() => {
                     </li>
                 </ul>
 
+                {error && (
+                    <div className="mb-4 text-red-500 text-center">
+                        {error}
+                    </div>
+                )}
+
                 {activeTab === 'login' ? (
                     <form onSubmit={handleLoginSubmit}>
                         <div className="mb-4">
@@ -168,6 +183,7 @@ useEffect(() => {
                                 placeholder="请输入用户名"
                                 value={loginUsername}
                                 onChange={(e) => setLoginUsername(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="mb-6">
@@ -181,13 +197,15 @@ useEffect(() => {
                                 placeholder="请输入密码"
                                 value={loginPassword}
                                 onChange={(e) => setLoginPassword(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
                         <button
                             type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+                            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isLoading}
                         >
-                            登录
+                            {isLoading ? '处理中...' : '登录'}
                         </button>
                     </form>
                 ) : (
@@ -203,6 +221,7 @@ useEffect(() => {
                                 placeholder="请输入用户名"
                                 value={registerUsername}
                                 onChange={(e) => setRegisterUsername(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="mb-6">
@@ -216,13 +235,15 @@ useEffect(() => {
                                 placeholder="请输入密码"
                                 value={registerPassword}
                                 onChange={(e) => setRegisterPassword(e.target.value)}
+                                disabled={isLoading}
                             />
                         </div>
                         <button
                             type="submit"
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+                            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={isLoading}
                         >
-                            注册
+                            {isLoading ? '处理中...' : '注册'}
                         </button>
                     </form>
                 )}
