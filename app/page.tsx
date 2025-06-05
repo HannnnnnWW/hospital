@@ -4,6 +4,8 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import { useRouter } from 'next/navigation';
+import Head from 'next/head';
+import { Layout } from 'antd';
 
 // 更新 API 基础 URL
 const API_BASE = 'http://121.40.80.144:3001/api';
@@ -27,6 +29,20 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true); // 添加 loading 状态
     const [error, setError] = useState<string | null>(null); // 添加 error 状态
     const router = useRouter();
+
+    // Images for the slider
+    const images = ['/hospital-image.png', '/hospital2.jpg', '/whu.jpg'];
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const nextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prevIndex) =>
+            prevIndex === 0 ? images.length - 1 : prevIndex - 1
+        );
+    };
 
     useEffect(() => {
         // 检查登录状态
@@ -159,53 +175,101 @@ const HomePage = () => {
         return <div className="error-message">错误：{error}</div>; // 添加错误提示
     }
 
-    return (
-        <div>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px' }}>
-                <h1>奔向端午医院预约挂号系统</h1>
-                <div className="header-buttons" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    {isLoggedIn ? (
-                        isAdmin ? (
-                            <Link href="/admin" className="admin-btn">管理后台</Link>
-                        ) : (
-                            <Link href="/profile" className="login-btn">个人中心</Link>
-                        )
-                    ) : (
-                        <Link href="/login" className="login-btn">用户登录</Link>
-                    )}
-                </div>
-            </header>
-            <div className="hospital-image">
-                <img src="/hospital-image.png" alt="医院实景图" />
-            </div>
-            <div className="guide-section">
-                <Link href="/guide" className="guide-dialog">智能导诊入口 ▶</Link>
-            </div>
-            <div className="main-content">
-                <div className="registration-section">
-                    <h2>门诊挂号</h2>
-                    <ul>
-                        {departments.map((dept) => (
-                            <li key={dept.id} onClick={() => navigateToDepartment(dept.name)}>
-                                {dept.name}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-                <div className="notice-section">
-                    <h2>医院公告</h2>
-                    <ul>
-                        {articles.map((article) => (
-                            <li key={article.id}>
-                                <Link href={`/article?id=${article.id}`}>
-                                    {article.title}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </div>
+   return (
+  <div>
+    {/* 添加网页标题 */}
+    <Head>
+      <title>奔向暑假医院预约挂号系统</title>
+      <meta name="description" content="医疗预约挂号平台" />
+    </Head>
+    
+    <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px' }}>
+      <h1>奔向暑假医院预约挂号系统</h1>
+      <div className="header-buttons" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        {isLoggedIn ? (
+          isAdmin ? (
+            <Link href="/admin" className="admin-btn">管理后台</Link>
+          ) : (
+            <Link href="/profile" className="login-btn">个人中心</Link>
+          )
+        ) : (
+          <Link href="/login" className="login-btn">用户登录</Link>
+        )}
+      </div>
+    </header>
+    
+    <div className="hospital-image-slider">
+      <button onClick={prevImage} className="slider-button prev">&#10094;</button>
+      <img
+        src={images[currentImageIndex]}
+        alt={`Hospital Image ${currentImageIndex + 1}`}
+        className="slider-image"
+      />
+      <button onClick={nextImage} className="slider-button next">&#10095;</button>
+    </div>
+    
+    <div className="guide-section">
+      <Link href="/guide" className="guide-dialog">自助导诊入口 ▶</Link>
+    </div>
+    
+    <div className="main-content">
+      <div className="registration-section">
+        <h2>门诊挂号</h2>
+        <ul>
+          {departments.map((dept) => (
+            <li key={dept.id} onClick={() => navigateToDepartment(dept.name)}>
+              {dept.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="notice-section">
+        <h2>医院公告</h2>
+        <ul>
+          {articles.map((article) => (
+            <li key={article.id}>
+              <Link href={`/article?id=${article.id}`}>
+                {article.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    
+    {/* 添加网页脚注 */}
+    <footer className="site-footer">
+      <div className="footer-content">
+        <div className="footer-section">
+          <h3>联系我们</h3>
+          <p>地址：湖北省武汉市洪山区珞瑜路100号</p>
+          <p>电话：0755-88889999</p>
+          <p>邮箱：hospital@whu.com</p>
         </div>
+        
+        <div className="footer-section">
+          <h3>服务时间</h3>
+          <p>门诊：8:00-18:00（全年无休）</p>
+          <p>急诊：24小时开放</p>
+          <p>行政：周一至周五 9:00-17:30</p>
+        </div>
+        
+        <div className="footer-section">
+          <h3>快速链接</h3>
+          <ul>
+            <li><Link href="/about">关于我们</Link></li>
+            <li><Link href="/guide">就诊指南</Link></li>
+            <li><Link href="/privacy">隐私政策</Link></li>
+            <li><Link href="/terms">服务条款</Link></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div className="footer-bottom">
+        <p>WHU@ {new Date().getFullYear()} 奔向暑假团队 </p>
+      </div>
+    </footer>
+  </div>
     );
 };
 

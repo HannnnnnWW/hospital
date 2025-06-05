@@ -71,6 +71,46 @@ header {
     background: #f0f8ff;
 }
 
+/* Slider container styles */
+.hospital-image-slider {
+    height: 33vh;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid #0072c6;
+    background: #f0f8ff;
+}
+
+/* Slider image styles */
+.slider-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+/* Slider button styles */
+.slider-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+    font-size: 24px;
+}
+
+.slider-button.prev {
+    left: 10px;
+}
+
+.slider-button.next {
+    right: 10px;
+}
+
 .hospital-image img {
     width: 100%;
     height: 100%;
@@ -642,4 +682,83 @@ li:hover {
 .header-buttons .return-btn {
     position: static; /* Override absolute positioning */
     transform: none; /* Remove transform */
+}
+/* 添加网页脚注样式 */
+.site-footer {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 40px 0 0;
+  margin-top: 50px;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 250px;
+  margin-bottom: 30px;
+  padding: 0 15px;
+}
+
+.footer-section h3 {
+  color: #3498db;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.footer-section p, 
+.footer-section li {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.footer-section a {
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-section a:hover {
+  color: #3498db;
+}
+
+.footer-bottom {
+  background-color: #1a252f;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 30px;
+}
+
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #95a5a6;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .footer-section {
+    width: 100%;
+  }
+}
+
+.article-meta {
+  color: black; 
+}
+.article-body {
+  color: black;
 }

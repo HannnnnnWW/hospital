@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import '../style.css';
 
-const API_BASE = 'http://121.40.80.144:3001/api';
+const API_BASE = 'http://121.40.80.144:3001';
 
 type Article = {
     id: number;
@@ -61,7 +61,7 @@ const ArticlePage = () => {
                     throw new Error('返回数据格式错误');
                 }
 
-                setArticle(data.articles);
+                setArticle(data);
                   console.log('articles 状态被更新:', data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : '获取文章失败');
